@@ -49,6 +49,13 @@ class async_dict(UserDict):
         super().__delitem__(key)
         return value
 
+    async def get(self, key, default=None, timeout=None):
+        try:
+            async with asyncio.timeout(timeout):
+                return await self.__getitem__(key)
+        except TimeoutError:
+            return default
+
     def is_waiting(self, key) -> bool:
         """Return True if there is a task waiting for key."""
         return key in self._pending

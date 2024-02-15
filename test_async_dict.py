@@ -17,6 +17,15 @@ async def test_async_dict():
     del d['foo']
     assert not d
 
+    assert await d.get('missing', timeout=.1) == None
+    assert await d.get('missing', 123, timeout=.1) == 123
+    try:
+        async with asyncio.timeout(.1):
+            await d.get('missing')
+            assert False
+    except TimeoutError:
+        pass
+
     async def reader():
         assert await d['bar'] == 99
         assert 'bar' in d
