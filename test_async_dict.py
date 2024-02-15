@@ -12,21 +12,21 @@ async def test_async_dict():
     assert len(d) == 1
     assert 'foo' in d
     assert list(d) == ['foo']
-    assert await d.get_wait('foo') == 10
+    assert await d['foo'] == 10
     assert not d.is_waiting('foo')
     del d['foo']
     assert not d
 
     async def reader():
-        assert await d.get_wait('bar') == 99
+        assert await d['bar'] == 99
         assert 'bar' in d
-        assert await d.pop_wait('baz') == 'done'
+        assert await d.pop('baz') == 'done'
         assert 'baz' not in d
         #with trio.move_on_after(.1):
         try:
             async with asyncio.timeout(.1):
                 await asyncio.sleep(.1)
-                await d.get_wait('baz')
+                await d['baz']
                 assert False
         except TimeoutError:
             pass
